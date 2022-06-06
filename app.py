@@ -3,10 +3,8 @@ import pickle
 
 model = pickle.load(open("model.sv",'rb'))
 
-# Diabetes_binary: min - 0.0, max - 1.0 i
 yesNo = {0:"No", 1:"Yes"}
 sex = {0:"Female", 1:"Male"}
-
 
 def main():
 
@@ -15,10 +13,9 @@ def main():
 	left, right = st.columns(2)
 	prediction = st.container()
 
-	#st.image("https://health.clevelandclinic.org/wp-content/uploads/sites/3/2020/01/mildHeartAttack-866257238-770x553.jpg")
-
 	with overview:
 		st.title("Diabetes")
+		st.write("Here you can fill in the form and get information on whether you are at risk of getting diabetes.")
 
 	with left:
 		_highBP = st.radio("Do you have high blood pressure?", list(yesNo.keys()), format_func=lambda x: yesNo[x])
@@ -67,11 +64,14 @@ def main():
 	data = [[_highBP, _highChol, _cholCheck, _BMI, _smoker, _stroke, _heartDiseaseorAttack, _physActivity, _fruits,
 			 _vegetables, _hvyAlcoholConsump, _anyHealthcare, _noDocbcCost, _genHlth, _mentHlth, _physHlth, _diffWalk,
 			 _sex, _age, _education, _income]]
-	chances = model.predict_proba(data)
+	chances = model.predict(data)
 
 	with prediction:
-		st.subheader("Chances of getting diabetes:")
-		st.write("Probability - ", round(chances[0][1]*100), "%")
+		st.subheader("Your result:")
+		if (chances[0] == 0):
+			st.write("You are not at risk, but you need to take care of yourself.")
+		else:
+			st.write("You are at risk and you need to change something in your life to prevent diabetes.")
 
 if __name__ == "__main__":
     main()
